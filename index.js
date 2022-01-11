@@ -98,11 +98,11 @@ async function run() {
       }
     });
 
-    // // GET API (Get all appointments)
-    // app.get('/appointments', async (req, res) => {
-    //     const cursor = appointmentsCollection.find({});
-    //     const appointments = await cursor.toArray();
-    //     res.send(appointments);
+    // GET API (Get all appointments)
+    // app.get("/appointments", async (req, res) => {
+    //   const cursor = appointmentsCollection.find({});
+    //   const appointments = await cursor.toArray();
+    //   res.send(appointments);
     // });
 
     // POST API to add doctor
@@ -186,6 +186,10 @@ async function run() {
       res.json({ clientSecret: paymentIntent.client_secret });
     });
 
+    //============================================================
+
+    const joulesLabPaymentCollection = database.collection("joulesLabPayment");
+
     //Stripe payment for JOULES_LAB_PROJECT
     app.post("/payment", async (req, res) => {
       const paymentInfo = req.body;
@@ -197,6 +201,22 @@ async function run() {
       });
       res.json({ clientSecret: paymentIntent.client_secret });
     });
+
+    // POST API to add payments for JOULES_LAB_PROJECT
+    app.post("/payments", async (req, res) => {
+      const joulesPayments = req.body;
+      const result = await joulesLabPaymentCollection.insertOne(joulesPayments);
+      res.json(result);
+    });
+
+    //GET API to get all payments for JOULES_LAB_PROJECT
+    app.get("/joulesPayments", async (req, res) => {
+      const cursor = joulesLabPaymentCollection.find({});
+      const joulesPayments = await cursor.toArray();
+      res.send(joulesPayments);
+    });
+
+    //=============================================================
   } finally {
     //   await client.close();
   }
